@@ -1,0 +1,33 @@
+<Manager>:
+    id: screen_manager
+
+    utg: utg
+    mp: mp
+    co: co
+    btn: btn
+    sb: sb
+
+    utg:
+        id: utg
+        name: "utg"
+        manager: screen_manager
+
+    mp:
+        id: mp
+        name: "mp"
+        manager: screen_manager
+        
+    co:
+        id: co
+        name: "co"
+        manager: screen_manager
+        
+    btn:
+        id: btn
+        name: "btn"
+        manager: screen_manager
+        
+    sb:
+        id: sb
+        name: "sb"
+        manager: screen_manager
