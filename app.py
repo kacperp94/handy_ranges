@@ -8,9 +8,11 @@ from kivy.uix.button import Button
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.checkbox import CheckBox
 from kivy.properties import ObjectProperty
+from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
+from kivy.uix.slider import Slider
 import pickle
-
+import random
 global d
 try:
     with open('opens.pickle', 'rb') as f:
@@ -35,6 +37,7 @@ class hand_button(Button):
         i = hand_button.row
         j = hand_button.col
         self.combos = [4, 12, 6][(i>j) - (i == j)]
+        hand_button.n += [0, self.combos][self.count]
         #print(self.text, self.combos)
     
     def on_press(self):
@@ -74,13 +77,13 @@ class position_button(CheckBox):
 class menu_screen(GridLayout):
     def on_checkbox_active(self,chkbox,value):
         app = App.get_running_app()
-        app.root.manager.current = chkbox.id
+        app.root.screen.manager.current = chkbox.id
         #print(chkbox.id)
         
     def __init__(self, **kwargs):
         super(menu_screen, self).__init__(**kwargs)
         positions = ['UTG', 'MP', 'CO', 'BTN', 'SB']
-        self.size_hint_x = 0.4
+        self.size_hint_x = 0.25
         self.cols = 2
         self.background_color = [255,0,0,1]
         for i in range(5):
@@ -113,18 +116,82 @@ class Manager(ScreenManager):
         self.add_widget(self.sb)
         self.current = 'UTG'
 
-
+class randomizer(BoxLayout):
+    def callback(self, instance):
+        self.label.text = str(random.randint(0,99))
+    def __init__(self, **kwargs):
+        super(randomizer, self).__init__(**kwargs)
+        self.size_hint_y = 0.2
+        btn = Button(text = "Generate", size_hint_x = 0.4)
+        btn.bind(on_press=self.callback)
+        self.label = Label(text = "0")
+        self.add_widget(btn)
+        self.add_widget(self.label)
+   
+class color_button(CheckBox):
+    def __init__(self, **kwargs):
+        super(color_button,self).__init__(**kwargs)
+        self.group = "color"
+        self.allow_no_selection = False
+        self.color = [255,0,0,1]
+        self.background_color = [255,0,0,1]
+    
+class menu_color(BoxLayout):
+    def __init__(self, **kwargs):
+        super(menu_color, self).__init__(**kwargs)
+        self.size_hint_x = 0.25
+        self.cols = 2
+        self.rows = 2
+        self.orientation = 'vertical'
+        self.background_color = [255,0,0,1]
+        self.red = color_button(state = 'down')
+        self.blue = color_button()
+        self.green = color_button()
+        self.slider_red = freq_slider()
+        self.slider_green = freq_slider()
+        self.slider_blue = freq_slider()
+        
+        self.add_widget(self.red)
+        self.add_widget(Button(background_color = [255,0,0,1]))
+        self.add_widget(self.slider_red)
+        self.add_widget(self.blue)
+        self.add_widget(Button(background_color = [0,0,255,1]))
+        self.add_widget(self.slider_blue)
+        self.add_widget(self.green)
+        self.add_widget(Button(background_color = [0,255,0,1]))
+        self.add_widget(self.slider_green)
+      
+class freq_slider(BoxLayout):
+    def on_touch_move(self,touch):
+        self.label.text = str(int(self.slider.value))
+    def __init__(self, **kwargs):
+        super(freq_slider, self).__init__(**kwargs)
+        self.slider = Slider(min=0,max=101,value=75,value_track = True)
+        self.add_widget(self.slider)
+        self.label = Label(text = str(self.slider.value))
+        self.add_widget(self.label)
         
 class screen(BoxLayout):
     def __init__(self, **kwargs):
         super(screen, self).__init__(**kwargs)
-        self.add_widget(menu_screen())
+        self.menu = menu_screen()
+        self.add_widget(self.menu)
         self.manager = Manager()
         self.add_widget(self.manager)
+        self.color_menu = menu_color()
+        self.add_widget(self.color_menu)
+
+class main_screen(BoxLayout):
+    def __init__(self, **kwargs):
+        super(main_screen, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.screen = screen()
+        self.add_widget(self.screen)
+        self.add_widget(randomizer()) 
         
 class ranges_app(App):
     def build(self):
-        return screen()
+        return main_screen()
     
     def on_stop(self):
         global d
