@@ -13,7 +13,9 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.uix.slider import Slider
 import pickle
 import random
+
 global d
+
 try:
     with open('opens.pickle', 'rb') as f:
         d = pickle.load(f)
@@ -32,6 +34,7 @@ class hand_button(Button):
         self.color = [2,2,2,1]
         self.p = position
         hand_button.col = (hand_button.col + 1)%13
+
         if(not hand_button.col):
             hand_button.row = (hand_button.row + 1)%13
         i = hand_button.row
@@ -134,7 +137,7 @@ class color_button(CheckBox):
         self.group = "color"
         self.allow_no_selection = False
         self.color = [255,0,0,1]
-        self.background_color = [255,0,0,1]
+        #self.background_color = bgr
     
 class menu_color(BoxLayout):
     def __init__(self, **kwargs):
@@ -144,13 +147,12 @@ class menu_color(BoxLayout):
         self.rows = 2
         self.orientation = 'vertical'
         self.background_color = [255,0,0,1]
-        self.red = color_button(state = 'down')
+        self.red = color_button(state = 'down', background_color = [255,0,0,1])
         self.blue = color_button()
         self.green = color_button()
         self.slider_red = freq_slider()
         self.slider_green = freq_slider()
         self.slider_blue = freq_slider()
-        
         self.add_widget(self.red)
         self.add_widget(Button(background_color = [255,0,0,1]))
         self.add_widget(self.slider_red)
